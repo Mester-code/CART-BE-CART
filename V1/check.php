@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/config.php';
 
-// خواندن دیتابیس‌ها
+
 $dataDb = readJsonFile(DATA_FILE);
 $msgDb = readJsonFile(MESSAGES_FILE);
 
@@ -29,7 +29,7 @@ foreach ($msgDb['messages'] as &$msg) {
             if ($tx['status'] == 'pending' && $expTime > $now) {
                 if ($tx['final_amount_rial'] == $msgAmount) {
                     
-                    // ✅ تطابق پیدا شد
+                    
                     $tx['status'] = 'paid';
                     $tx['paid_at'] = date('Y-m-d H:i:s');
                     $tx['matched_msg_id'] = $msg['msg_id'];
@@ -40,19 +40,7 @@ foreach ($msgDb['messages'] as &$msg) {
                     $matchedCount++;
                     $details[] = "تراکنش {$tx['id']} کاربر {$tx['name']} (چت آیدی: {$tx['chat_id']}) با مبلغ {$msgAmount} ریال تایید شد.";
                     
-                    // ==========================================
-                    // 🔔 محل توسعه آینده (Future Hooks)
-                    // ==========================================
-                    // ۱. ارسال نوتیفیکیشن به ربات تلگرام کاربر
-                    // sendTelegramNotification($tx['chat_id'], "پرداخت شما تایید شد");
-                    
-                    // ۲. ارسال پیامک به ادمین
-                    // sendAdminSms("واریز جدید: {$tx['name']} - {$msgAmount} ریال");
-                    
-                    // ۳. آپدیت موجودی کاربر در دیتابیس SQL
-                    // $pdo->query("UPDATE users SET balance = balance + {$tx['base_amount_rial']} WHERE chat_id = '{$tx['chat_id']}'");
-                    // ==========================================
-                    
+                    // اینجا کارتو بکن 
                     break;
                 }
             } else if ($tx['status'] == 'pending' && $expTime <= $now) {
@@ -62,7 +50,7 @@ foreach ($msgDb['messages'] as &$msg) {
     }
 }
 
-// ذخیره تغییرات
+
 writeJsonFile(DATA_FILE, $dataDb);
 writeJsonFile(MESSAGES_FILE, $msgDb);
 
