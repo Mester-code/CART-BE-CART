@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/config.php';
 
-// بررسی API Key
+
 checkApiKey();
 
 $hangtId = trim($_REQUEST['hangt_id'] ?? '');
@@ -15,7 +15,7 @@ if (empty($hangtId)) {
     exit;
 }
 
-// خواندن دیتابیس‌ها
+
 $dataDb = readJsonFile(DATA_FILE);
 $msgDb = readJsonFile(MESSAGES_FILE);
 
@@ -30,7 +30,7 @@ if (empty($dataDb)) {
 $now = time();
 $targetTx = null;
 
-// پیدا کردن تراکنش
+
 foreach ($dataDb['transactions'] as $index => $tx) {
     if (trim($tx['id'] ?? '') === $hangtId) {
         $targetTx = &$dataDb['transactions'][$index];
@@ -50,7 +50,7 @@ if (!$targetTx) {
     exit;
 }
 
-// بررسی انقضا
+
 $expTime = strtotime($targetTx['expires_at']);
 
 if ($targetTx['status'] === 'pending' && $now > $expTime) {
@@ -66,7 +66,7 @@ if ($targetTx['status'] === 'pending' && $now > $expTime) {
     exit;
 }
 
-// بررسی فعال
+
 if ($targetTx['status'] === 'pending' && !empty($msgDb)) {
     $matchFound = false;
     
