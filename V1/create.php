@@ -2,16 +2,16 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/config.php';
 
-// بررسی API Key
+
 checkApiKey();
 
-// دریافت پارامترها
+
 $chatId = $_REQUEST['chat_id'] ?? '';
 $amount = $_REQUEST['amount'] ?? 0;
 $type = $_REQUEST['type'] ?? 'rial'; // tmn یا rial
 $name = $_REQUEST['name'] ?? '';
 
-// اعتبارسنجی
+
 if (empty($chatId) || empty($amount) || empty($name)) {
     echo json_encode([
         'success' => false,
@@ -20,7 +20,7 @@ if (empty($chatId) || empty($amount) || empty($name)) {
     exit;
 }
 
-// تبدیل مبلغ به ریال
+
 $amount = (int)$amount;
 if ($type === 'tmn') {
     $amountRial = $amount * 10;
@@ -28,10 +28,10 @@ if ($type === 'tmn') {
     $amountRial = $amount;
 }
 
-// خواندن دیتابیس
+
 $data = readJsonFile(DATA_FILE);
 
-// مقداردهی اولیه اگر فایل خالی است
+
 if (empty($data)) {
     $data = [
         'current_card_index' => 0,
@@ -40,17 +40,17 @@ if (empty($data)) {
     ];
 }
 
-// انتخاب کارت و تولید شناسه
+
 $cards = json_decode(CARDS, true);
 $currentCardIndex = $data['current_card_index'] ?? 0;
 $lastTrackingCode = $data['last_tracking_code'] ?? 0;
 
-// اگر شناسه به ۹۹۹۹ رسید، برو به کارت بعدی
+
 if ($lastTrackingCode >= MAX_TRACKING_CODE) {
     $currentCardIndex++;
     $lastTrackingCode = 0;
     
-    // اگر همه کارت‌ها پر شدن، خطا بده
+    
     if ($currentCardIndex >= count($cards)) {
         echo json_encode([
             'success' => false,
@@ -60,15 +60,15 @@ if ($lastTrackingCode >= MAX_TRACKING_CODE) {
     }
 }
 
-// تولید شناسه جدید
+
 $lastTrackingCode++;
 $finalAmountRial = $amountRial + $lastTrackingCode;
 
-// محاسبه زمان انقضا (۶۰ دقیقه)
+
 $now = time();
 $expiresAt = $now + (TRANSACTION_VALIDITY_MINUTES * 60);
 
-// ساخت تراکنش
+
 $newTx = [
     'id' => 'TX_' . time() . '_' . rand(1000, 9999),
     'chat_id' => $chatId,
@@ -82,16 +82,13 @@ $newTx = [
     'card_index' => $currentCardIndex
 ];
 
-// ذخیره در دیتابیس
+
 $data['transactions'][] = $newTx;
 $data['current_card_index'] = $currentCardIndex;
 $data['last_tracking_code'] = $lastTrackingCode;
 
 writeJsonFile(DATA_FILE, $data);
 
-// ==========================================
-// 📞 Callback - برگرداندن اطلاعات به کاربر
-// ==========================================
 $selectedCard = $cards[$currentCardIndex];
 
 echo json_encode([
