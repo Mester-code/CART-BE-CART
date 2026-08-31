@@ -2,10 +2,10 @@
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/config.php';
 
-// بررسی API Key
+
 checkApiKey();
 
-// دریافت پیامک
+
 $sms = $_REQUEST['sms_body'] ?? '';
 
 if (empty($sms)) {
@@ -16,7 +16,7 @@ if (empty($sms)) {
     exit;
 }
 
-// ۱. چک کردن کلمه واریز
+
 if (strpos($sms, 'واریز پول') === false && strpos($sms, 'واریز') === false) {
     echo json_encode([
         'success' => false,
@@ -25,11 +25,11 @@ if (strpos($sms, 'واریز پول') === false && strpos($sms, 'واریز') ==
     exit;
 }
 
-// تبدیل اعداد فارسی/عربی به انگلیسی
+
 $sms = str_replace(['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'], ['0','1','2','3','4','5','6','7','8','9'], $sms);
 $sms = str_replace(['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'], ['0','1','2','3','4','5','6','7','8','9'], $sms);
 
-// ۲. استخراج مبلغ
+
 $amountRial = 0;
 if (preg_match('/([\d,]+)\s*ریال\s*به\s*حساب\s*شما\s*نشست/u', $sms, $m)) {
     $amountRial = (int) str_replace(',', '', $m[1]);
@@ -41,20 +41,20 @@ if (preg_match('/([\d,]+)\s*ریال\s*به\s*حساب\s*شما\s*نشست/u', $
     exit;
 }
 
-// ۳. استخراج ساعت و تاریخ
+
 $time = '';
 preg_match('/(\d{1,2}:\d{2})/', $sms, $m) ? $time = $m[1] : $time = 'unknown';
 
 $date = '';
 preg_match('/(\d{4}\.\d{2}\.\d{2})/', $sms, $m) ? $date = $m[1] : $date = 'unknown';
 
-// خواندن دیتابیس پیامک‌ها
+
 $messages = readJsonFile(MESSAGES_FILE);
 if (empty($messages)) {
     $messages = ['messages' => []];
 }
 
-// ساخت رکورد جدید
+
 $newMsg = [
     'msg_id' => 'MSG_' . time() . '_' . rand(100, 999),
     'raw_body' => $sms,
