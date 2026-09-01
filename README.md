@@ -2,7 +2,7 @@
 
 # 🏦 سیستم پرداخت خودکار کارت به کارت
 
-### مدیریت حرفهای پرداختهای کارتبهکارت با تایید آنی و شناسه یکتا
+### مدیریت حرفه ای پرداخت کارت به کارت  با تایید آنی و شناسه یکتا
 
 [![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![Version](https://img.shields.io/badge/Version-2.0.0-3498db?style=for-the-badge)]()
@@ -704,8 +704,8 @@ curl "/cleanup.php?api_key=YOUR_API_KEY"
 
 <div align="center">
 
-### 🎉 ساخته شده با ❤️
+### 🎉 ساخته شده با 🖤❤️
 
-**نسخه 2.0.0** • **۱۴۰۵** • **MIT License**
+**نسخه 1.0.0** • **1405/06/10** • ** MESTER CODE **
 
 </div>
