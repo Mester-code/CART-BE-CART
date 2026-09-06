@@ -1,711 +1,262 @@
-<div align="center">
 
-# 🏦 سیستم پرداخت خودکار کارت به کارت
+# 🏦 سیستم پرداخت خودکار کارت به کارت (Professional Auto-Payment)
 
-### مدیریت حرفه ای پرداخت کارت به کارت  با تایید آنی و شناسه یکتا
-
-[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-777BB4?style=for-the-badge&logo=php)](https://php.net)
+[![Database](https://img.shields.io/badge/Database-MySQL%20%26%20JSON-00758F?style=for-the-badge&logo=mysql)]()
 [![Version](https://img.shields.io/badge/Version-2.0.0-3498db?style=for-the-badge)]()
 [![License](https://img.shields.io/badge/License-MIT-27ae60?style=for-the-badge)]()
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-e74c3c?style=for-the-badge)]()
 
-</div>
+سیستم حرفه‌ای، امن و مقیاس‌پذیر برای مدیریت پرداخت‌های کارت‌به‌کارت با قابلیت تایید آنی، شناسه یکتا، مدیریت چند کارت بانکی، پنل مدیریت پیشرفته و پشتیبانی کامل از MySQL.
 
 ---
 
 ## 📑 فهرست مطالب
 
-- [✨ ویژگیها](#-ویژگیها)
-- [📁 ساختار پروژه](#-ساختار-پروژه)
-- [🚀 نصب و راهاندازی](#-نصب-و-راهاندازی)
-- [📥 دریافت پیامک (add.php)](#-دریافت-پیامک-addphp)
-- [🔌 API Reference](#-api-reference)
-  - [create.php](#1-createphp--ساخت-تراکنش)
-  - [add.php](#2-addphp--دریافت-پیامک)
-  - [check.php](#3-checkphp--مچ-کردن-خودکار)
-  - [verify.php](#4-verifyphp--بررسی-وضعیت)
-  - [cleanup.php](#5-cleanupphp--آرشیو-شبانه)
-- [⏰ Cron Job](#-cron-job)
-- [🔐 امنیت](#-امنیت)
-- [🔧 عیبیابی](#-عیبیابی)
-- [❓ سوالات متداول](#-سوالات-متداول)
+1. [✨ ویژگی‌های کلیدی](#-ویژگیهای-کلیدی)
+2. [🔄 مقایسه نسخه ۱ و ۲](#-مقایسه-نسخه-۱-و-۲)
+3. [📋 پیش‌نیازها](#-پیشنیازها)
+4. [🚀 نصب و راه‌اندازی (گام‌به‌گام)](#-نصب-و-راهاندازی-گامبهگام)
+5. [📱 تنظیم برنامه‌های ارسال پیامک (MacroDroid / SMS Forwarder)](#-تنظیم-برنامههای-ارسال-پیامک)
+6. [🔌 مستندات کامل API](#-مستندات-کامل-api)
+7. [⚙️ راهنمای پنل مدیریت](#-راهنمای-پنل-مدیریت)
+8. [⏰ تنظیم Cron Job ها](#-تنظیم-cron-job-ها)
+9. [🔐 امنیت و نکات حیاتی](#-امنیت-و-نکات-حیاتی)
+10. [🔧 عیب‌یابی (Troubleshooting)](#-عیبیابی-troubleshooting)
 
 ---
 
-## ✨ ویژگیها
+## ✨ ویژگی‌های کلیدی
 
-<table>
-<tr>
-<td width="50%">
-
-### 🎯 هسته سیستم
-- ⚡ **تایید آنی** پرداخت به محض واریز
-- 🔢 **شناسه یکتا** (۱ تا ۹۹۹۹)
-- 💳 **چرخش خودکار** بین چند کارت بانکی (فعلا کارت های بلوبانک)
-- ⏰ **اعتبار ۶۰ دقیقهای** هر تراکنش
-
-</td>
-<td width="50%">
-
-### 🛡️ امکانات جانبی
-- 📦 **آرشیو خودکار** شبانه
-- 🔐 **محافظت** با API Key
-- 📱 **سازگار** با MacroDroid و SMS Forwarder
-- 🌐 **پشتیبانی** از GET و POST
-
-</td>
-</tr>
-</table>
+- ⚡ **تایید آنی پرداخت:** به محض نشستن پیامک واریز، تراکنش تایید می‌شود.
+- 🔢 **شناسه یکتا (Tracking Code):** جلوگیری از تداخل مبالغ با افزودن شناسه ۱ تا ۹۹۹۹ به مبلغ.
+- 💳 **مدیریت چند کارت:** چرخش خودکار (Round-Robin) بین کارت‌های بانکی تعریف شده.
+- ⏰ **اعتبار زمانی:** انقضای خودکار تراکنش‌ها پس از ۶۰ دقیقه.
+- 🔐 **امنیت پیشرفته:** محافظت با API Key، Rate Limiting (محدودیت درخواست)، و لاگ‌گیری IP.
+- 📱 **تایید هویت دو مرحله‌ای (OTP):** اجباری کردن تایید شماره موبایل برای مبالغ بالای آستانه تعیین‌شده (با قفل ۱۵ دقیقه‌ای پس از ۳ خطا).
+- 🌐 **Webhook / Callback:** ارسال خودکار اطلاعات پرداخت به آدرس دلخواه شما پس از تایید موفق.
+- 📦 **بکاپ‌گیری خودکار:** آرشیو روزانه داده‌ها و پاکسازی خودکار فایل‌های قدیمی.
+- 📊 **پنل مدیریت حرفه‌ای:** آمار زنده، نمودار ساعتی، مدیریت کارت‌ها، مچ دستی تراکنش‌ها و مشاهده IP پرداخت‌کننده.
 
 ---
 
-## 📁 ساختار پروژه
+## 🔄 مقایسه نسخه ۱ و ۲
 
-```bash
-project/
-│
-├── 📄 config.php          # تنظیمات مرکزی (API Key، کارتها)
-├── 📄 create.php          # ساخت تراکنش جدید
-├── 📄 add.php             # دریافت پیامک واریز (GET)
-├── 📄 check.php           # مچ کردن خودکار تراکنشها
-├── 📄 verify.php          # بررسی وضعیت تراکنش
-├── 📄 cleanup.php         # آرشیو شبانه (Cron Job)
-│
-├── 🗃️ data.json           # تراکنشهای فعال
-├── 🗃️ archive.json        # تراکنشهای آرشیو شده
-├── 🗃️ messages.json       # پیامکهای دریافتی
-│
-└── 🔒 .htaccess           # محافظت فایلها
-```
+| ویژگی | نسخه ۱ (Legacy) | نسخه ۲ (Professional) |
+| :--- | :---: | :---: |
+| **محل ذخیره‌سازی** | فایل‌های JSON | دیتابیس MySQL (با پشتیبانی JSON برای بکاپ) |
+| **سرعت و مقیاس‌پذیری** | مناسب برای حجم پایین | بهینه‌شده برای هزاران تراکنش در روز |
+| **امنیت داده** | متوسط (نیازمند `.htaccess` قوی) | بالا (Prepared Statements، جلوگیری از SQL Injection) |
+| **قابلیت جستجو** | محدود | پیشرفته (جستجو بر اساس IP، موبایل، تاریخ) |
+| **آمار و گزارش‌گیری** | دستی | داشبورد زنده با نمودار و خروجی‌های تحلیلی |
+| **مدیریت تلاش‌های OTP** | ندارد | دارد (بن کردن ۱۵ دقیقه‌ای پس از ۳ خطا) |
+
+> ⚠️ **توصیه اکید:** برای محیط عملیاتی (Production)، حتماً از **نسخه ۲ (MySQL)** استفاده کنید. نسخه ۱ فقط برای تست یا پروژه‌های بسیار کوچک مناسب است.
 
 ---
 
-## 🚀 نصب و راهاندازی
+## 📋 پیش‌نیازها
 
-### ۱️⃣ تنظیم `config.php`
+- سرور لینوکسی (cPanel, DirectAdmin یا VPS)
+- PHP نسخه 7.4 یا بالاتر
+- MySQL نسخه 5.7 یا 8.0+
+- فعال بودن افزونه‌های PHP: `pdo`, `pdo_mysql`, `curl`, `json`
+- یک پنل پیامک فعال (مانند net-visit.ir) برای ارسال OTP
+
+---
+
+## 🚀 نصب و راه‌اندازی (گام‌به‌گام)
+
+### گام ۱: آپلود فایل‌ها
+تمامی فایل‌های پروژه را در پوشه مورد نظر در هاست خود (مثلاً `public_html/kbk/v2/`) آپلود کنید.
+
+### گام ۲: ساخت دیتابیس
+1. در cPanel به بخش **MySQL Databases** بروید.
+2. یک دیتابیس جدید و یک کاربر جدید بسازید و کاربر را به دیتابیس متصل کنید (با تمام دسترسی‌ها).
+
+### گام ۳: پیکربندی `config.php`
+فایل `config.php` را باز کرده و مقادیر زیر را با اطلاعات خود جایگزین کنید:
 
 ```php
-<?php
-// 🔐 کلید API (حتماً تغییر دهید)
-define('API_KEY', 'یک_کلید_تصادفی_طولانی_و_امن');
+// تنظیمات دیتابیس
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'نام_دیتابیس_شما');
+define('DB_USER', 'نام_کاربر_دیتابیس');
+define('DB_PASS', 'رمز_عبور_دیتابیس');
 
-// 💳 اطلاعات کارتهای بانکی
-define('CARDS', json_encode([
-    [
-        'number' => '6219-8610-xxxx-xxxx',
-        'bank'   => 'بلو بانک',
-        'owner'  => 'نام شما'
-    ]
-]));
+// تنظیمات امنیتی
+define('API_KEY', 'یک_کلید_تصادفی_بسیار_طولانی_و_پیچیده');
+define('ADMIN_PASSWORD', 'رمز_عبور_ورود_به_پنل_مدیریت');
+
+// تنظیمات پیامک و سیستم
+define('SMS_TOKEN', 'توکن_دریافتی_از_پنل_پیامک_شما');
+define('OTP_THRESHOLD_TOMAN', 500000); // مبالغ بالاتر از این مقدار نیاز به OTP دارند
+define('RATE_LIMIT_REQUESTS', 100); // حداکثر درخواست در ساعت برای هر IP
 ```
 
-### ۲️⃣ تنظیم دسترسیها
+### گام ۴: اجرای نصب‌کننده
+مرورگر خود را باز کرده و به آدرس زیر بروید تا جداول دیتابیس به صورت خودکار ساخته شوند:
+```text
+https://yourdomain.com/kbk/v2/install.php
+```
+> ✅ پس از مشاهده پیام "نصب با موفقیت انجام شد"، فایل `install.php` را به دلایل امنیتی حذف یا تغییر نام دهید.
 
+### گام ۵: تنظیم دسترسی‌ها
+مطمئن شوید پوشه‌ها دسترسی صحیح دارند:
 ```bash
 chmod 755 /path/to/project/
-chmod 644 *.php *.json
-```
-
-### ۳️⃣ تولید API Key امن
-
-```php
-<?php
-echo bin2hex(random_bytes(32));
-// خروجی: a3f5c8e9d2b1f4a7c6e8d9b2a5f7c4e1d8b3a6f9c2e5d8b1a4f7c0e3d6b9a2
+chmod 644 *.php
+mkdir backup && chmod 755 backup
 ```
 
 ---
 
-## 📥 دریافت پیامک (`add.php`)
+## 📱 تنظیم برنامه‌های ارسال پیامک (بسیار مهم)
 
-> [!IMPORTANT]
-> این endpoint از متد **GET** پشتیبانی میکند. پیامک را از طریق **MacroDroid** یا **SMS Forwarder** به صورت GET ارسال کنید.
+برای اینکه سیستم به صورت خودکار پیامک‌های واریزی را دریافت کند، باید یکی از برنامه‌های زیر را روی گوشی اندرویدی که سیم‌کارت بانکی در آن است نصب کنید.
 
-### 📱 تنظیم MacroDroid
+> ⚠️ **نکته حیاتی:** لینک‌های زیر فرض می‌کنند فایل `add.php` درخواست‌های **GET** را می‌پذیرد. مطمئن شوید `api_key` را با مقدار تعریف‌شده در `config.php` جایگزین می‌کنید.
 
-| مرحله | تنظیمات |
-|-------|---------|
-| **Trigger** | SMS Received → From: `BluBank` |
-| **Action** | HTTP Request |
-| **Method** | `GET` |
-| **URL** | `/add.php?api_key=YOUR_API_KEY&sms_body=[sms_content]` |
+### روش اول: استفاده از برنامه MacroDroid (پیشنهادی)
+1. برنامه **MacroDroid** را نصب و باز کنید.
+2. روی **Add Macro** بزنید.
+3. **Trigger (ماشه):** 
+   - `SMS Received` 
+   - Content: `واریز` (یا نام فرستنده بانک مثل `BluBank` یا `IR-KISH`)
+4. **Action (عملیات):**
+   - `HTTP Request`
+   - Method: `GET`
+   - URL: `https://yourdomain.com/kbk/v2/add.php?api_key=YOUR_API_KEY&sms_body=[sms_message]`
+   - *(توجه: `[sms_message]` یک متغیر در MacroDroid است که متن پیامک را جایگذاری می‌کند. آن را از بخش Variables انتخاب کنید).*
+5. ماکرو را ذخیره و فعال کنید.
 
-### 📲 تنظیم SMS Forwarder
-
-| مرحله | تنظیمات |
-|-------|---------|
-| **Filter** | Sender contains `BluBank` |
-| **Forward to** | HTTP GET |
-| **URL** | `/add.php?api_key=YOUR_API_KEY&sms_body=[message]` |
-
-### 🔗 نمونه URL
-
-```
-/add.php?api_key=YOUR_API_KEY&sms_body=بلو%0Aواریز+پول%0A+محمدمهدی+عزیز،+100001+ریال+به+حساب+شما+نشست.%0A+موجودی:+19,200,871+ریال%0A۲۳:۱۸%0A۱۴۰۵.۰۶.۰۶
-```
+### روش دوم: استفاده از برنامه SMS Forwarder
+1. برنامه **SMS Forwarder** را نصب کنید.
+2. یک **Rule** جدید بسازید.
+3. **If (شرط):** 
+   - `Sender` contains `BluBank` (یا نام بانک خود را وارد کنید).
+4. **Then (عملیات):**
+   - `Send HTTP GET Request`
+   - URL: `https://yourdomain.com/kbk/v2/add.php?api_key=YOUR_API_KEY&sms_body=[message]`
+   - *(توجه: `[message]` متغیر خود برنامه است).*
+5. Rule را ذخیره و فعال کنید.
 
 ---
 
-## 🔌 API Reference
+## 🔌 مستندات کامل API
 
-### 1️⃣ `create.php` — ساخت تراکنش
+تمامی درخواست‌ها (به جز `check.php`) نیازمند ارسال `api_key` معتبر هستند.
 
-<div align="center">
+### ۱. ساخت تراکنش جدید (`create.php`)
+- **Method:** `POST`
+- **Content-Type:** `application/json` یا `application/x-www-form-urlencoded`
+- **پارامترها:**
+  - `api_key` (string, الزامی)
+  - `chat_id` (string, الزامی): شناسه کاربر در سیستم شما
+  - `name` (string, الزامی): نام کاربر
+  - `amount` (integer, الزامی): مبلغ
+  - `type` (string, اختیاری): `rial` یا `tmn` (پیش‌فرض: `rial`)
+  - `callback_url` (string, اختیاری): آدرسی که پس از پرداخت موفق، اطلاعات به آن POST می‌شود.
 
-**Method:** `POST`
-
-</div>
-
-#### 📋 پارامترها
-
-| پارامتر | نوع | الزامی | توضیحات |
-|:--------|:----|:------:|:--------|
-| `api_key` | `string` | ✅ | کلید API از config.php |
-| `chat_id` | `string` | ✅ | آیدی کاربر (تلگرام یا سیستم) |
-| `name` | `string` | ✅ | نام کاربر |
-| `amount` | `integer` | ✅ | مبلغ (ریال یا تومان) |
-| `type` | `string` | ❌ | `rial` یا `tmn` (پیشفرض: `rial`) |
-
-#### 💻 نمونه کد
-
-<details>
-<summary><b>🐘 PHP</b></summary>
-
-```php
-<?php
-$ch = curl_init('/create.php');
-curl_setopt_array($ch, [
-    CURLOPT_POST           => true,
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POSTFIELDS     => http_build_query([
-        'api_key' => 'YOUR_API_KEY',
-        'chat_id' => '123456789',
-        'name'    => 'علی محمدی',
-        'amount'  => 100000,
-        'type'    => 'rial'
-    ])
-]);
-
-$response = json_decode(curl_exec($ch), true);
-curl_close($ch);
-
-if ($response['success']) {
-    echo "کارت: " . $response['callback']['card_number'];
-    echo "مبلغ: " . $response['callback']['amount_to_pay_rial'] . " ریال";
-}
-```
-
-</details>
-
-<details>
-<summary><b>🐍 Python</b></summary>
-
-```python
-import requests
-
-response = requests.post("/create.php", data={
-    "api_key": "YOUR_API_KEY",
-    "chat_id": "123456789",
-    "name": "علی محمدی",
-    "amount": 100000,
-    "type": "rial"
-})
-data = response.json()
-
-if data["success"]:
-    print("کارت:", data["callback"]["card_number"])
-    print("مبلغ:", data["callback"]["amount_to_pay_rial"])
-```
-
-</details>
-
-<details>
-<summary><b>🟨 JavaScript</b></summary>
-
-```javascript
-const formData = new URLSearchParams({
-    api_key: 'YOUR_API_KEY',
-    chat_id: '123456789',
-    name: 'علی محمدی',
-    amount: '100000',
-    type: 'rial'
-});
-
-const res = await fetch('/create.php', {
-    method: 'POST',
-    body: formData
-});
-const data = await res.json();
-
-if (data.success) {
-    console.log('کارت:', data.callback.card_number);
-    console.log('مبلغ:', data.callback.amount_to_pay_rial);
-}
-```
-
-</details>
-
-<details>
-<summary><b>🔷 Go</b></summary>
-
-```go
-package main
-
-import (
-    "encoding/json"
-    "fmt"
-    "net/http"
-    "net/url"
-    "strings"
-)
-
-type CreateResponse struct {
-    Success  bool `json:"success"`
-    Callback struct {
-        CardNumber      string `json:"card_number"`
-        AmountToPayRial int    `json:"amount_to_pay_rial"`
-        TrackingCode    int    `json:"tracking_code"`
-    } `json:"callback"`
-}
-
-func main() {
-    form := url.Values{}
-    form.Set("api_key", "YOUR_API_KEY")
-    form.Set("chat_id", "123456789")
-    form.Set("name", "علی محمدی")
-    form.Set("amount", "100000")
-    form.Set("type", "rial")
-
-    resp, _ := http.Post(
-        "/create.php",
-        "application/x-www-form-urlencoded",
-        strings.NewReader(form.Encode()),
-    )
-    defer resp.Body.Close()
-
-    var result CreateResponse
-    json.NewDecoder(resp.Body).Decode(&result)
-
-    fmt.Println("کارت:", result.Callback.CardNumber)
-    fmt.Println("مبلغ:", result.Callback.AmountToPayRial)
-}
-```
-
-</details>
-
-#### ✅ پاسخ موفق
-
+**نمونه پاسخ موفق:**
 ```json
 {
   "success": true,
-  "message": "تراکنش با موفقیت ایجاد شد",
+  "message": "تراکنش ایجاد شد",
+  "payment_url": "https://yourdomain.com/kbk/v2/pay.php?id=TX_123456",
   "callback": {
-    "card_number": "6219-8610-xxxx-xxxx",
-    "card_bank": "بلو بانک",
-    "card_owner": "نام شما",
     "amount_to_pay_rial": 100001,
-    "amount_to_pay_toman": 10000.1,
     "tracking_code": 1,
-    "expires_at": "2026-08-31 15:30:00",
     "expires_in_minutes": 60
   }
 }
 ```
 
----
+### ۲. دریافت پیامک واریزی (`add.php`)
+- **Method:** `GET` (بهینه‌شده برای اپلیکیشن‌های Forwarder)
+- **پارامترها:**
+  - `api_key` (string, الزامی)
+  - `sms_body` (string, الزامی): متن کامل پیامک دریافتی
 
-### 2️⃣ `add.php` — دریافت پیامک
+### ۳. بررسی وضعیت تراکنش (`verify.php`)
+- **Method:** `GET`
+- **پارامترها:**
+  - `api_key` (string, الزامی)
+  - `hangt_id` (string, الزامی): شناسه تراکنش (همان `tracking_code` یا `id` کامل)
+- **توضیح:** این متد به صورت Active Check عمل می‌کند. اگر تراکنش `pending` باشد، سیستم بلافاصله جدول پیامک‌ها را برای یافتن مبلغ دقیق جستجو کرده و در صورت تطابق، آن را `paid` می‌کند.
 
-<div align="center">
-
-**Method:** `GET`
-
-</div>
-
-#### 📋 پارامترها
-
-| پارامتر | نوع | الزامی | توضیحات |
-|:--------|:----|:------:|:--------|
-| `api_key` | `string` | ✅ | کلید API |
-| `sms_body` | `string` | ✅ | متن کامل پیامک بانکی |
-
-#### 💻 نمونه کد
-
-<details>
-<summary><b>🐘 PHP</b></summary>
-
-```php
-<?php
-$smsBody = "بلو\nواریز پول\n محمدمهدی عزیز، 100001 ریال به حساب شما نشست.\n موجودی: 19,200,871 ریال\n۲۳:۱۸\n۱۴۰۵.۰۶.۰۶";
-
-$url = "/add.php?" . http_build_query([
-    'api_key'  => 'YOUR_API_KEY',
-    'sms_body' => $smsBody
-]);
-
-$response = json_decode(file_get_contents($url), true);
-```
-
-</details>
-
-<details>
-<summary><b>🐍 Python</b></summary>
-
-```python
-import requests
-
-sms_body = """بلو
-واریز پول
- محمدمهدی عزیز، 100001 ریال به حساب شما نشست.
- موجودی: 19,200,871 ریال
-۲۳:۱۸
-۱۴۰۵.۰۶.۰۶"""
-
-response = requests.get("/add.php", params={
-    "api_key": "YOUR_API_KEY",
-    "sms_body": sms_body
-})
-print(response.json())
-```
-
-</details>
-
-<details>
-<summary><b>🟨 JavaScript</b></summary>
-
-```javascript
-const smsBody = `بلو
-واریز پول
- محمدمهدی عزیز، 100001 ریال به حساب شما نشست.
- موجودی: 19,200,871 ریال
-۲۳:۱۸
-۱۴۰۵.۰۶.۰۶`;
-
-const params = new URLSearchParams({
-    api_key: 'YOUR_API_KEY',
-    sms_body: smsBody
-});
-
-const res = await fetch(`/add.php?${params}`);
-console.log(await res.json());
-```
-
-</details>
-
-<details>
-<summary><b>🔷 Go</b></summary>
-
-```go
-package main
-
-import (
-    "fmt"
-    "net/http"
-    "net/url"
-)
-
-func main() {
-    params := url.Values{}
-    params.Set("api_key", "YOUR_API_KEY")
-    params.Set("sms_body", "بلو\nواریز پول\n محمدمهدی عزیز، 100001 ریال به حساب شما نشست.")
-
-    resp, _ := http.Get("/add.php?" + params.Encode())
-    defer resp.Body.Close()
-
-    fmt.Println("Status:", resp.Status)
-}
-```
-
-</details>
+### ۴. وب‌سرویس یکپارچه (`api.php`)
+برای مدیریت حرفه‌ای‌تر، می‌توانید از اندپوینت یکپارچه استفاده کنید:
+- `GET /api.php?action=docs&api_key=...` : دریافت مستندات
+- `GET /api.php?action=stats&api_key=...` : دریافت آمار کلی
+- `GET /api.php?action=verify&transaction_id=...&api_key=...` : بررسی وضعیت
 
 ---
 
-### 3️⃣ `check.php` — مچ کردن خودکار
+## ⚙️ راهنمای پنل مدیریت
 
-<div align="center">
+برای ورود به پنل، به آدرس `admin.php` مراجعه کرده و رمز عبور تعریف‌شده در `config.php` را وارد کنید.
 
-**Method:** `GET` • **بدون پارامتر** • **توسط Cron Job اجرا میشود**
-
-</div>
-
-```bash
-curl /check.php
-```
-
-#### ✅ پاسخ موفق
-
-```json
-{
-  "success": true,
-  "message": "1 تراکنش با موفقیت مچ و تایید شد.",
-  "details": [
-    "تراکنش TX_1693500000_1234 کاربر علی محمدی با مبلغ 100001 ریال تایید شد."
-  ]
-}
-```
+### بخش‌های اصلی پنل:
+1. **داشبورد:** نمایش آمار زنده (واریزی امروز، هفته، ماه)، نمودار ساعتی تراکنش‌ها و لیست IP های برتر پرداخت‌کننده.
+2. **ساخت تراکنش:** ایجاد دستی تراکنش برای کاربران خاص با امکان تعیین `callback_url`.
+3. **کارت‌ها:** افزودن، ویرایش و حذف کارت‌های بانکی. (سیستم به صورت خودکار کارت‌های غیر از "بلو بانک" را با برچسب هشدار مشخص می‌کند).
+4. **تراکنش‌ها:** مشاهده لیست کامل، کپی لینک پرداخت با یک کلیک، و **مچ دستی** (Manual Match) در صورتی که پیامک به هر دلیلی خودکار مچ نشده باشد.
+5. **تنظیمات:** تغییر API Key، توکن پیامک، آستانه OTP و رمز عبور پنل، همگی بدون نیاز به ویرایش دستی فایل `config.php`.
 
 ---
 
-### 4️⃣ `verify.php` — بررسی وضعیت
+## ⏰ تنظیم Cron Job ها
 
-<div align="center">
+برای عملکرد صحیح سیستم، تنظیم دو وظیفه زمان‌بندی شده در cPanel الزامی است:
 
-**Method:** `GET`
-
-</div>
-
-#### 📋 پارامترها
-
-| پارامتر | نوع | الزامی | توضیحات |
-|:--------|:----|:------:|:--------|
-| `api_key` | `string` | ✅ | کلید API |
-| `hangt_id` | `string` | ✅ | شناسه یکتای تراکنش |
-
-#### 💻 نمونه کد
-
-<details>
-<summary><b>🐘 PHP</b></summary>
-
-```php
-<?php
-$url = "/verify.php?" . http_build_query([
-    'api_key'  => 'YOUR_API_KEY',
-    'hangt_id' => '1'
-]);
-$data = json_decode(file_get_contents($url), true);
-
-echo $data['status']; // paid | pending | expired
-```
-
-</details>
-
-<details>
-<summary><b>🐍 Python</b></summary>
-
-```python
-import requests
-
-data = requests.get("/verify.php", params={
-    "api_key": "YOUR_API_KEY",
-    "hangt_id": "1"
-}).json()
-
-print(data["status"])  # paid | pending | expired
-```
-
-</details>
-
-<details>
-<summary><b>🟨 JavaScript</b></summary>
-
-```javascript
-const params = new URLSearchParams({
-    api_key: 'YOUR_API_KEY',
-    hangt_id: '1'
-});
-
-const res = await fetch(`/verify.php?${params}`);
-const data = await res.json();
-
-console.log(data.status); // paid | pending | expired
-```
-
-</details>
-
-<details>
-<summary><b>🔷 Go</b></summary>
-
-```go
-package main
-
-import (
-    "encoding/json"
-    "fmt"
-    "net/http"
-)
-
-type VerifyResponse struct {
-    Success bool   `json:"success"`
-    Status  string `json:"status"`
-    Message string `json:"message"`
-}
-
-func main() {
-    resp, _ := http.Get("/verify.php?api_key=YOUR_API_KEY&hangt_id=1")
-    defer resp.Body.Close()
-
-    var result VerifyResponse
-    json.NewDecoder(resp.Body).Decode(&result)
-
-    fmt.Println("وضعیت:", result.Status)
-}
-```
-
-</details>
-
-#### 📊 وضعیتهای ممکن
-
-| وضعیت | توضیحات |
-|:------|:--------|
-| `paid` | ✅ پرداخت با موفقیت انجام شده |
-| `pending` | ⏳ در انتظار پرداخت |
-| `expired` | ❌ زمان تراکنش منقضی شده (۶۰ دقیقه) |
+1. **بررسی خودکار پیامک‌ها (هر ۱ دقیقه):**
+   ```bash
+   * * * * * php /home/username/public_html/kbk/v2/check.php
+   ```
+2. **بکاپ‌گیری و آرشیو شبانه (هر روز ساعت ۲ بامداد):**
+   ```bash
+   0 2 * * * curl -s "https://yourdomain.com/kbk/v2/backup.php?api_key=YOUR_API_KEY"
+   ```
+> *مسیر `/home/username/public_html/...` را با مسیر واقعی هاست خود جایگزین کنید.*
 
 ---
 
-### 5️⃣ `cleanup.php` — آرشیو شبانه
+## 🔐 امنیت و نکات حیاتی
 
-<div align="center">
+1. **محافظت از فایل‌های حساس:** فایل `.htaccess` زیر باید حتماً در ریشه پروژه وجود داشته باشد:
+   ```apache
+   <FilesMatch "\.(json|sql|log)$">
+       Order allow,deny
+       Deny from all
+   </FilesMatch>
+   <Files "config.php">
+       Order allow,deny
+       Deny from all
+   </Files>
+   ```
+2. **تغییر رمزهای پیش‌فرض:** بلافاصله پس از نصب، `ADMIN_PASSWORD` و `API_KEY` را در پنل مدیریت تغییر دهید.
+3. **HTTPS:** حتماً برای دامنه خود گواهی SSL فعال کنید تا اطلاعات بین گوشی کاربر و سرور رمزنگاری شود.
+4. **محدودیت دسترسی به `check.php`:** در `.htaccess` دسترسی به این فایل را فقط به IP سرور خود (مثلاً `127.0.0.1`) محدود کنید تا از اجرای غیرمجاز جلوگیری شود.
 
-**Method:** `GET` • **توسط Cron Job اجرا میشود**
+---
 
-</div>
+## 🔧 عیب‌یابی (Troubleshooting)
 
-```bash
-curl "/cleanup.php?api_key=YOUR_API_KEY"
+| مشکل | علت احتمالی | راه‌حل |
+| :--- | :--- | :--- |
+| **خطای "دسترسی غیرمجاز"** | `api_key` اشتباه است یا ارسال نشده. | مقدار `api_key` را در درخواست با `config.php` چک کنید. |
+| **پیامک مچ نمی‌شود** | مبلغ واریزی دقیقاً با `final_amount_rial` برابر نیست. | مطمئن شوید کاربر دقیقاً همان مبلغ (شامل شناسه) را واریز کرده است. |
+| **خطای "جدول یافت نشد" (SQL)** | جداول دیتابیس ساخته نشده‌اند. | فایل `install.php` را مجدداً در مرورگر اجرا کنید. |
+| **خطا در ارسال پیامک (OTP)** | توکن اشتباه است یا موجودی پنل تمام شده. | به پنل پیامک خود مراجعه کرده و `SMS_TOKEN` و موجودی را بررسی کنید. |
+| **صفحه پرداخت لود نمی‌شود** | مشکل در `config.php` یا اتصال دیتابیس. | لاگ خطاهای PHP (`error_log`) هاست را بررسی کنید. |
+
+---
+
+## 📄 لایسنس
+
+این پروژه تحت لایسنس **MIT** منتشر شده است. برای استفاده تجاری و شخصی آزاد است، اما حفظ نام توسعه‌دهنده در کدها اخلاق حرفه‌ای است.
+
+> ساخته شده با ❤️ | نسخه ۲.۰.۰ | مستندات نهایی
 ```
 
-#### ✅ پاسخ موفق
-
-```json
-{
-  "success": true,
-  "message": "عملیات آرشیو با موفقیت انجام شد",
-  "archived_count": 45,
-  "remaining_active": 12,
-  "reset_tracking_codes": false
-}
-```
-
----
-
-## ⏰ Cron Job
-
-### تنظیم در cPanel
-
-```cron
-# 🔄 مچ کردن خودکار - هر ۱ دقیقه
-* * * * * php /home/username/public_html/check.php
-
-# 🗑️ آرشیو شبانه - هر روز ساعت ۰۰:۰۰
-0 0 * * * curl "/cleanup.php?api_key=YOUR_API_KEY"
-```
-
-> [!NOTE]
-> مسیر فایل را با مسیر واقعی هاست خود جایگزین کنید.
-
----
-
-## 🔐 امنیت
-
-### محافظت فایلهای حساس
-
-فایل `.htaccess` زیر را در ریشه پروژه قرار دهید:
-
-```apache
-# 🚫 محافظت از فایلهای JSON
-<FilesMatch "\.(json)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# 🔒 محافظت از فایل تنظیمات
-<Files "config.php">
-    Order allow,deny
-    Deny from all
-</Files>
-
-# 🛡️ محدود کردن دسترسی به check.php (اختیاری)
-<Files "check.php">
-    Order deny,allow
-    Deny from all
-    Allow from 127.0.0.1
-</Files>
-```
-
-### نکات امنیتی
-
-- ✅ حتماً از **HTTPS** استفاده کنید
-- ✅ API Key را **هر ۳ ماه** تغییر دهید
-- ✅ فایلهای JSON را **هر شب بکاپ** بگیرید
-- ✅ دسترسی نوشتن پوشه را محدود کنید (`chmod 755`)
-
----
-
-## 🔧 عیبیابی
-
-<table>
-<thead>
-<tr>
-<th width="25%">❌ مشکل</th>
-<th width="35%">🔍 علت</th>
-<th width="40%">✅ راهحل</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>دسترسی غیرمجاز</code></td>
-<td>API Key اشتباه یا ارسال نشده</td>
-<td>مقدار <code>config.php</code> را بررسی کنید</td>
-</tr>
-<tr>
-<td><code>تراکنش یافت نشد</code></td>
-<td>شناسه اشتباه یا منقضی شده</td>
-<td>از <code>debug_info</code> در پاسخ استفاده کنید</td>
-</tr>
-<tr>
-<td><code>پیامک مچ نمیشود</code></td>
-<td>مبلغ متفاوت یا تراکنش منقضی</td>
-<td><code>data.json</code> و <code>messages.json</code> را بررسی کنید</td>
-</tr>
-<tr>
-<td><code>فایل JSON خالی</code></td>
-<td>عدم دسترسی نوشتن به پوشه</td>
-<td><code>chmod 755</code> را روی پوشه اجرا کنید</td>
-</tr>
-<tr>
-<td><code>Parse error</code></td>
-<td>نسخه PHP قدیمی</td>
-<td>PHP 7.4 یا بالاتر نصب کنید</td>
-</tr>
-</tbody>
-</table>
-
----
-
-## ❓ سوالات متداول
-
-<details>
-<summary><b>🔹 حداکثر چند تراکنش در روز میتوان داشت؟</b></summary>
-<br>
-با هر کارت بانکی <b>۹۹۹۹ تراکنش</b>. با چند کارت، این عدد ضربدر تعداد کارتها میشود.
-</details>
-
-<details>
-<summary><b>🔹 آیا میتوانم از چند کارت بانکی استفاده کنم؟</b></summary>
-<br>
-بله، در <code>config.php</code> میتوانید چندین کارت تعریف کنید. سیستم به صورت خودکار وقتی یک کارت پر شد، به کارت بعدی میرود. فقط منظورم از چند کارت کارت‌های بلوبانک است که شامل کارت شخصی و کارت حساب کسب و کار است در صورتی که حساب کسب و کار ندارید فقط از شماره کارت اصلی بلوبانک استفاده کنید
-</details>
-
-<details>
-<summary><b>🔹 اگر کاربر مبلغ را اشتباه واریز کرد چه میشود؟</b></summary>
-<br>
-تراکنش مچ نمیشود و پس از <b>۶۰ دقیقه</b> منقضی میشود. کاربر باید دوباره درخواست دهد.
-</details>
-
-
-<details>
-<summary><b>🔹 آیا این سیستم قانونی است؟</b></summary>
-<br>
-استفاده از کارت به کارت شخصی برای کسبوکار ممکن است ریسکهای مالیاتی و بانکی داشته باشد. برای حجم بالا، از <b>درگاه پرداخت رسمی</b> استفاده کنید.
-</details>
-
----
-
-<div align="center">
-
-### 🎉 ساخته شده با 🖤❤️
-
-**نسخه 1.0.0** • **1405/06/10** • ** MESTER CODE **
-
-</div>
+--
